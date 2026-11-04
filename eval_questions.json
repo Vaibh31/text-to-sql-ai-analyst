@@ -1,0 +1,122 @@
+[
+  {
+    "question": "How many customers are there?",
+    "gold_sql": "SELECT COUNT(*) FROM Customers"
+  },
+  {
+    "question": "How many products are there?",
+    "gold_sql": "SELECT COUNT(*) FROM Products"
+  },
+  {
+    "question": "How many orders are there in total?",
+    "gold_sql": "SELECT COUNT(*) FROM Orders"
+  },
+  {
+    "question": "How many employees are there?",
+    "gold_sql": "SELECT COUNT(*) FROM Employees"
+  },
+  {
+    "question": "List all product category names.",
+    "gold_sql": "SELECT CategoryName FROM Categories"
+  },
+  {
+    "question": "How many customers are in each country?",
+    "gold_sql": "SELECT Country, COUNT(*) FROM Customers GROUP BY Country"
+  },
+  {
+    "question": "Which country has the most customers?",
+    "gold_sql": "SELECT Country FROM Customers GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 1"
+  },
+  {
+    "question": "Which city has the most customers?",
+    "gold_sql": "SELECT City FROM Customers GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1"
+  },
+  {
+    "question": "What is the name of the most expensive product?",
+    "gold_sql": "SELECT ProductName FROM Products ORDER BY UnitPrice DESC LIMIT 1"
+  },
+  {
+    "question": "What is the average unit price of all products?",
+    "gold_sql": "SELECT AVG(UnitPrice) FROM Products"
+  },
+  {
+    "question": "How many products are discontinued?",
+    "gold_sql": "SELECT COUNT(*) FROM Products WHERE Discontinued = 1"
+  },
+  {
+    "question": "How many products are in each category? Show the category name.",
+    "gold_sql": "SELECT c.CategoryName, COUNT(*) FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID GROUP BY c.CategoryName"
+  },
+  {
+    "question": "Which products have fewer than 10 units in stock?",
+    "gold_sql": "SELECT ProductName FROM Products WHERE UnitsInStock < 10"
+  },
+  {
+    "question": "How many orders were placed each year?",
+    "gold_sql": "SELECT strftime('%Y', OrderDate), COUNT(*) FROM Orders GROUP BY strftime('%Y', OrderDate)"
+  },
+  {
+    "question": "Show each employee's ID and the number of orders they handled.",
+    "gold_sql": "SELECT EmployeeID, COUNT(*) FROM Orders GROUP BY EmployeeID"
+  },
+  {
+    "question": "What is the total revenue after discount across all orders?",
+    "gold_sql": "SELECT SUM(UnitPrice * Quantity * (1 - Discount)) FROM \"Order Details\""
+  },
+  {
+    "question": "Who are the top 5 customers by revenue after discount? Show the company name.",
+    "gold_sql": "SELECT c.CompanyName FROM Customers c JOIN Orders o ON c.CustomerID = o.CustomerID JOIN \"Order Details\" od ON o.OrderID = od.OrderID GROUP BY c.CustomerID ORDER BY SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC LIMIT 5"
+  },
+  {
+    "question": "Which EmployeeID generated the highest revenue after discount?",
+    "gold_sql": "SELECT o.EmployeeID FROM Orders o JOIN \"Order Details\" od ON o.OrderID = od.OrderID GROUP BY o.EmployeeID ORDER BY SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC LIMIT 1"
+  },
+  {
+    "question": "What are the top 3 best-selling products by total quantity sold?",
+    "gold_sql": "SELECT p.ProductName, SUM(od.Quantity) AS qty FROM Products p JOIN \"Order Details\" od ON p.ProductID = od.ProductID GROUP BY p.ProductID ORDER BY qty DESC LIMIT 3"
+  },
+  {
+    "question": "What is the revenue after discount for each product category? Show the category name.",
+    "gold_sql": "SELECT c.CategoryName, SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) FROM Categories c JOIN Products p ON c.CategoryID = p.CategoryID JOIN \"Order Details\" od ON p.ProductID = od.ProductID GROUP BY c.CategoryName"
+  },
+  {
+    "question": "Which product generated the highest revenue after discount?",
+    "gold_sql": "SELECT p.ProductName FROM Products p JOIN \"Order Details\" od ON p.ProductID = od.ProductID GROUP BY p.ProductID ORDER BY SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC LIMIT 1"
+  },
+  {
+    "question": "How many orders were shipped to each country?",
+    "gold_sql": "SELECT ShipCountry, COUNT(*) FROM Orders GROUP BY ShipCountry"
+  },
+  {
+    "question": "How many suppliers are there in each country?",
+    "gold_sql": "SELECT Country, COUNT(*) FROM Suppliers GROUP BY Country"
+  },
+  {
+    "question": "How many products does each supplier provide? Show the supplier company name.",
+    "gold_sql": "SELECT s.CompanyName, COUNT(*) FROM Suppliers s JOIN Products p ON s.SupplierID = p.SupplierID GROUP BY s.SupplierID"
+  },
+  {
+    "question": "Which shipping company handled the most orders?",
+    "gold_sql": "SELECT s.CompanyName FROM Orders o JOIN Shippers s ON o.ShipVia = s.ShipperID GROUP BY s.ShipperID ORDER BY COUNT(*) DESC LIMIT 1"
+  },
+  {
+    "question": "What is the average freight cost per order?",
+    "gold_sql": "SELECT AVG(Freight) FROM Orders"
+  },
+  {
+    "question": "Which customers have never placed an order? Show the company name.",
+    "gold_sql": "SELECT CompanyName FROM Customers c WHERE NOT EXISTS (SELECT 1 FROM Orders o WHERE o.CustomerID = c.CustomerID)"
+  },
+  {
+    "question": "List the first names of employees who report to employee ID 2.",
+    "gold_sql": "SELECT FirstName FROM Employees WHERE ReportsTo = 2"
+  },
+  {
+    "question": "What is the average order value after discount?",
+    "gold_sql": "SELECT AVG(total) FROM (SELECT OrderID, SUM(UnitPrice * Quantity * (1 - Discount)) AS total FROM \"Order Details\" GROUP BY OrderID)"
+  },
+  {
+    "question": "How many different customers placed orders in each year?",
+    "gold_sql": "SELECT strftime('%Y', OrderDate), COUNT(DISTINCT CustomerID) FROM Orders GROUP BY strftime('%Y', OrderDate)"
+  }
+]

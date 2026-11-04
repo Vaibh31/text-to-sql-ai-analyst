@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 from main import extract_schema, text_to_sql, run_sql, db_path
 
 st.markdown("""
@@ -61,9 +62,33 @@ if (run_clicked or st.session_state.pop("auto_run", False)) and question:
 
     try:
         columns, rows = run_sql(db_path, sql)
-        st.subheader("Result")
         df = pd.DataFrame(rows, columns=columns)
+
+        st.subheader("Result")
         st.markdown(df.to_html(index=False), unsafe_allow_html=True)
+
+        # Auto chart: one text column + one number column
+        if len(df.columns) >= 2 and len(df) > 1:
+            label_col = df.columns[0]
+            number_cols = df.select_dtypes(include="number").columns
+            value_col = number_cols[-1] if len(number_cols) else None
+
+            if value_col is not None and value_col != label_col:
+                st.subheader("Chart")
+                fig, ax = plt.subplots(figsize=(8, 4))
+                fig.patch.set_alpha(0)
+                ax.set_facecolor("none")
+                ax.bar(df[label_col].astype(str), df[value_col], color="#60a5fa")
+                ax.set_xlabel(label_col, color="white")
+                ax.set_ylabel(value_col, color="white")
+                ax.tick_params(colors="white")
+                plt.xticks(rotation=45, ha="right")
+                for spine in ax.spines.values():
+                    spine.set_color("#475569")
+                fig.tight_layout()
+                st.pyplot(fig)
+                plt.close(fig)
+
     except Exception as e:
         st.error(f"Error: {e}")
 

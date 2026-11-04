@@ -1,0 +1,215 @@
+{
+  "accuracy": 100.0,
+  "results": [
+    {
+      "question": "How many customers are there?",
+      "gold_sql": "SELECT COUNT(*) FROM Customers",
+      "predicted_sql": "SELECT COUNT(*) FROM Customers;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many products are there?",
+      "gold_sql": "SELECT COUNT(*) FROM Products",
+      "predicted_sql": "SELECT COUNT(*) FROM Products;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many orders are there in total?",
+      "gold_sql": "SELECT COUNT(*) FROM Orders",
+      "predicted_sql": "SELECT COUNT(*) FROM Orders;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many employees are there?",
+      "gold_sql": "SELECT COUNT(*) FROM Employees",
+      "predicted_sql": "SELECT COUNT(*) FROM Employees;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "List all product category names.",
+      "gold_sql": "SELECT CategoryName FROM Categories",
+      "predicted_sql": "SELECT CategoryName FROM Categories;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many customers are in each country?",
+      "gold_sql": "SELECT Country, COUNT(*) FROM Customers GROUP BY Country",
+      "predicted_sql": "SELECT Country, COUNT(*) AS CustomerCount\nFROM Customers\nGROUP BY Country;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "Which country has the most customers?",
+      "gold_sql": "SELECT Country FROM Customers GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 1",
+      "predicted_sql": "SELECT Country FROM Customers GROUP BY Country ORDER BY COUNT(*) DESC LIMIT 1;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "Which city has the most customers?",
+      "gold_sql": "SELECT City FROM Customers GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1",
+      "predicted_sql": "SELECT City FROM Customers GROUP BY City ORDER BY COUNT(*) DESC LIMIT 1",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "What is the name of the most expensive product?",
+      "gold_sql": "SELECT ProductName FROM Products ORDER BY UnitPrice DESC LIMIT 1",
+      "predicted_sql": "SELECT ProductName FROM Products WHERE UnitPrice = (SELECT MAX(UnitPrice) FROM Products);",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "What is the average unit price of all products?",
+      "gold_sql": "SELECT AVG(UnitPrice) FROM Products",
+      "predicted_sql": "SELECT AVG(UnitPrice) FROM Products;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many products are discontinued?",
+      "gold_sql": "SELECT COUNT(*) FROM Products WHERE Discontinued = 1",
+      "predicted_sql": "SELECT COUNT(*) FROM Products WHERE Discontinued = 1;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many products are in each category? Show the category name.",
+      "gold_sql": "SELECT c.CategoryName, COUNT(*) FROM Products p JOIN Categories c ON p.CategoryID = c.CategoryID GROUP BY c.CategoryName",
+      "predicted_sql": "SELECT c.CategoryName, COUNT(p.ProductID) AS ProductCount\nFROM Categories c\nLEFT JOIN Products p ON c.CategoryID = p.CategoryID\nGROUP BY c.CategoryName\nORDER BY c.CategoryName;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "Which products have fewer than 10 units in stock?",
+      "gold_sql": "SELECT ProductName FROM Products WHERE UnitsInStock < 10",
+      "predicted_sql": "SELECT ProductID, ProductName, UnitsInStock FROM Products WHERE UnitsInStock < 10;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many orders were placed each year?",
+      "gold_sql": "SELECT strftime('%Y', OrderDate), COUNT(*) FROM Orders GROUP BY strftime('%Y', OrderDate)",
+      "predicted_sql": "SELECT strftime('%Y', OrderDate) AS Year, COUNT(*) AS OrderCount\nFROM Orders\nGROUP BY Year\nORDER BY Year;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "Show each employee's ID and the number of orders they handled.",
+      "gold_sql": "SELECT EmployeeID, COUNT(*) FROM Orders GROUP BY EmployeeID",
+      "predicted_sql": "SELECT Employees.EmployeeID, COUNT(Orders.OrderID) AS OrderCount\nFROM Employees\nLEFT JOIN Orders ON Employees.EmployeeID = Orders.EmployeeID\nGROUP BY Employees.EmployeeID\nORDER BY Employees.EmployeeID;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "What is the total revenue after discount across all orders?",
+      "gold_sql": "SELECT SUM(UnitPrice * Quantity * (1 - Discount)) FROM \"Order Details\"",
+      "predicted_sql": "SELECT SUM(UnitPrice * Quantity * (1 - Discount)) AS TotalRevenue FROM \"Order Details\"",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "Who are the top 5 customers by revenue after discount? Show the company name.",
+      "gold_sql": "SELECT c.CompanyName FROM Customers c JOIN Orders o ON c.CustomerID = o.CustomerID JOIN \"Order Details\" od ON o.OrderID = od.OrderID GROUP BY c.CustomerID ORDER BY SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC LIMIT 5",
+      "predicted_sql": "SELECT c.CompanyName\nFROM Customers c\nJOIN Orders o ON c.CustomerID = o.CustomerID\nJOIN \"Order Details\" od ON o.OrderID = od.OrderID\nGROUP BY c.CustomerID, c.CompanyName\nORDER BY SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC\nLIMIT 5",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "Which EmployeeID generated the highest revenue after discount?",
+      "gold_sql": "SELECT o.EmployeeID FROM Orders o JOIN \"Order Details\" od ON o.OrderID = od.OrderID GROUP BY o.EmployeeID ORDER BY SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC LIMIT 1",
+      "predicted_sql": "SELECT o.EmployeeID\nFROM Orders o\nJOIN \"Order Details\" od ON o.OrderID = od.OrderID\nGROUP BY o.EmployeeID\nORDER BY SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC\nLIMIT 1",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "What are the top 3 best-selling products by total quantity sold?",
+      "gold_sql": "SELECT p.ProductName, SUM(od.Quantity) AS qty FROM Products p JOIN \"Order Details\" od ON p.ProductID = od.ProductID GROUP BY p.ProductID ORDER BY qty DESC LIMIT 3",
+      "predicted_sql": "SELECT p.ProductID, p.ProductName, SUM(od.Quantity) AS TotalQuantity\nFROM \"Order Details\" od\nJOIN Products p ON od.ProductID = p.ProductID\nGROUP BY p.ProductID, p.ProductName\nORDER BY TotalQuantity DESC\nLIMIT 3",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "What is the revenue after discount for each product category? Show the category name.",
+      "gold_sql": "SELECT c.CategoryName, SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) FROM Categories c JOIN Products p ON c.CategoryID = p.CategoryID JOIN \"Order Details\" od ON p.ProductID = od.ProductID GROUP BY c.CategoryName",
+      "predicted_sql": "SELECT c.CategoryName, SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) AS RevenueAfterDiscount\nFROM \"Order Details\" od\nJOIN Products p ON od.ProductID = p.ProductID\nJOIN Categories c ON p.CategoryID = c.CategoryID\nGROUP BY c.CategoryName;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "Which product generated the highest revenue after discount?",
+      "gold_sql": "SELECT p.ProductName FROM Products p JOIN \"Order Details\" od ON p.ProductID = od.ProductID GROUP BY p.ProductID ORDER BY SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC LIMIT 1",
+      "predicted_sql": "SELECT p.ProductName, SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) AS Revenue\nFROM \"Order Details\" od\nJOIN Products p ON od.ProductID = p.ProductID\nGROUP BY p.ProductID\nORDER BY Revenue DESC\nLIMIT 1",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many orders were shipped to each country?",
+      "gold_sql": "SELECT ShipCountry, COUNT(*) FROM Orders GROUP BY ShipCountry",
+      "predicted_sql": "SELECT ShipCountry, COUNT(*) AS OrderCount\nFROM Orders\nGROUP BY ShipCountry;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many suppliers are there in each country?",
+      "gold_sql": "SELECT Country, COUNT(*) FROM Suppliers GROUP BY Country",
+      "predicted_sql": "SELECT Country, COUNT(*) AS SupplierCount\nFROM Suppliers\nGROUP BY Country;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many products does each supplier provide? Show the supplier company name.",
+      "gold_sql": "SELECT s.CompanyName, COUNT(*) FROM Suppliers s JOIN Products p ON s.SupplierID = p.SupplierID GROUP BY s.SupplierID",
+      "predicted_sql": "SELECT s.CompanyName, COUNT(p.ProductID) AS ProductCount\nFROM Suppliers s\nLEFT JOIN Products p ON s.SupplierID = p.SupplierID\nGROUP BY s.SupplierID, s.CompanyName\nORDER BY s.CompanyName;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "Which shipping company handled the most orders?",
+      "gold_sql": "SELECT s.CompanyName FROM Orders o JOIN Shippers s ON o.ShipVia = s.ShipperID GROUP BY s.ShipperID ORDER BY COUNT(*) DESC LIMIT 1",
+      "predicted_sql": "SELECT s.CompanyName\nFROM Shippers s\nJOIN Orders o ON s.ShipperID = o.ShipVia\nGROUP BY s.ShipperID, s.CompanyName\nORDER BY COUNT(*) DESC\nLIMIT 1",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "What is the average freight cost per order?",
+      "gold_sql": "SELECT AVG(Freight) FROM Orders",
+      "predicted_sql": "SELECT AVG(Freight) AS AverageFreight FROM Orders;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "Which customers have never placed an order? Show the company name.",
+      "gold_sql": "SELECT CompanyName FROM Customers c WHERE NOT EXISTS (SELECT 1 FROM Orders o WHERE o.CustomerID = c.CustomerID)",
+      "predicted_sql": "SELECT CompanyName\nFROM Customers\nWHERE NOT EXISTS (\n    SELECT 1\n    FROM Orders\n    WHERE Orders.CustomerID = Customers.CustomerID\n);",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "List the first names of employees who report to employee ID 2.",
+      "gold_sql": "SELECT FirstName FROM Employees WHERE ReportsTo = 2",
+      "predicted_sql": "SELECT FirstName FROM Employees WHERE ReportsTo = 2;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "What is the average order value after discount?",
+      "gold_sql": "SELECT AVG(total) FROM (SELECT OrderID, SUM(UnitPrice * Quantity * (1 - Discount)) AS total FROM \"Order Details\" GROUP BY OrderID)",
+      "predicted_sql": "SELECT AVG(OrderTotal) FROM (SELECT \"Order Details\".OrderID, SUM(\"Order Details\".UnitPrice * \"Order Details\".Quantity * (1 - \"Order Details\".Discount)) AS OrderTotal FROM \"Order Details\" GROUP BY \"Order Details\".OrderID) AS sub;",
+      "correct": true,
+      "error": null
+    },
+    {
+      "question": "How many different customers placed orders in each year?",
+      "gold_sql": "SELECT strftime('%Y', OrderDate), COUNT(DISTINCT CustomerID) FROM Orders GROUP BY strftime('%Y', OrderDate)",
+      "predicted_sql": "SELECT strftime('%Y', OrderDate) AS Year, COUNT(DISTINCT CustomerID) AS CustomerCount FROM Orders GROUP BY Year ORDER BY Year",
+      "correct": true,
+      "error": null
+    }
+  ]
+}
