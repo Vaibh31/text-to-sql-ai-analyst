@@ -3,4 +3,5 @@ pandas
 langchain
 langchain-core
 langchain-groq
-python-dotenvmatplotlib
+python-dotenv
+matplotlib
