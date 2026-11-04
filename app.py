@@ -2,11 +2,58 @@ import streamlit as st
 import pandas as pd
 from main import extract_schema, text_to_sql, run_sql, db_path
 
+st.markdown("""
+<style>
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stMain"] {
+    background: transparent;
+}
+#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -2;
+}
+#bg-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 15, 30, 0.65);
+    z-index: -1;
+}
+</style>
+<video id="bg-video" autoplay muted loop playsinline>
+    <source src="app/static/bg.mp4" type="video/mp4">
+</video>
+<div id="bg-overlay"></div>
+""", unsafe_allow_html=True)
+
 st.title("Text-to-SQL Assistant")
 st.caption("Ask questions about the Northwind business database (customers, orders, products, employees) in plain English.")
-question = st.text_input("Your question")
+EXAMPLES = [
+    "Top 5 customers by total order value",
+    "Which employee generated the most sales revenue?",
+    "How many orders were placed each year?",
+    "Which product categories sell the most units?",
+]
 
-if st.button("Run") and question:
+st.write("**Try an example:**")
+cols = st.columns(2)
+for i, example in enumerate(EXAMPLES):
+    if cols[i % 2].button(example, width="stretch"):
+        st.session_state.question = example
+        st.session_state.auto_run = True
+
+question = st.text_input(
+    "Or ask your own question",
+    key="question",
+    placeholder="e.g. Which country has the most customers?",
+)
+
+run_clicked = st.button("Run", type="primary")
+
+if (run_clicked or st.session_state.pop("auto_run", False)) and question:
     schema = extract_schema(db_path)
     sql = text_to_sql(schema, question)
     st.subheader("Generated SQL")
@@ -19,3 +66,31 @@ if st.button("Run") and question:
         st.markdown(df.to_html(index=False), unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Error: {e}")
+
+st.markdown("""
+<style>
+.custom-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(10, 15, 30, 0.85);
+    z-index: 100;
+}
+.custom-footer a {
+    color: #60a5fa;
+    text-decoration: none;
+}
+[data-testid="stMainBlockContainer"] {
+    padding-bottom: 70px;
+}
+</style>
+<div class="custom-footer">
+    Built with LangChain · Groq (GPT-OSS 120B) · SQLite · Streamlit &nbsp;|&nbsp;
+    <a href="https://github.com/Vaibh31/text-to-sql-ai-analyst" target="_blank">View code on GitHub</a>
+</div>
+""", unsafe_allow_html=True)
