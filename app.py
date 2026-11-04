@@ -16,6 +16,7 @@ if st.button("Run") and question:
     try:
         columns, rows = run_sql(db_path, sql)
         st.subheader("Result")
-        st.dataframe(pd.DataFrame(rows, columns=columns))
+        df = pd.DataFrame(rows, columns=columns)
+        st.markdown(df.to_html(index=False), unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Error: {e}")
