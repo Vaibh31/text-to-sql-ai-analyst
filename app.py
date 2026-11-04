@@ -3,8 +3,7 @@ import pandas as pd
 from main import extract_schema, text_to_sql, run_sql, db_path
 
 st.title("Text-to-SQL Assistant")
-st.caption("Ask a question about the Amazon database in plain English.")
-
+st.caption("Ask questions about the Northwind business database (customers, orders, products, employees) in plain English.")
 question = st.text_input("Your question")
 
 if st.button("Run") and question:

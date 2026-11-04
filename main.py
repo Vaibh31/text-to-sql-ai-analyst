@@ -3,7 +3,7 @@
 import sqlite3
 import json
 
-db_path = "amazon.db"
+db_path = "northwind.db"
 
 def extract_schema(db_path):
     conn = sqlite3.connect(db_path)
@@ -36,6 +36,7 @@ llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0)
 
 def text_to_sql(schema, prompt):
     SYSTEM_PROMPT = """You are an expert SQL generator. Given a database schema and a user question, write a valid SQLite query that answers it.
+Wrap table or column names that contain spaces in double quotes, e.g. "Order Details".
 Return ONLY the SQL query. No explanation, no markdown, no code fences."""
 
     USER_PROMPT = """Schema:
@@ -74,7 +75,7 @@ def run_sql(db_path, query):
 # Quick test
 if __name__ == "__main__":
     schema = extract_schema(db_path)
-    sql = text_to_sql(schema, "How many customers are there?")
+    sql = text_to_sql(schema, "Who are the top 5 customers by total order value?")
     print("SQL:", sql)
     columns, rows = run_sql(db_path, sql)
     print(columns, rows)
