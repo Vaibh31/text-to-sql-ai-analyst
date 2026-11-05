@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from main import extract_schema, text_to_sql, run_sql, db_path
 
+st.set_page_config(page_title="Text-to-SQL AI Analyst", page_icon="🧠")
+
 st.markdown("""
 <style>
 .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stMain"] {
