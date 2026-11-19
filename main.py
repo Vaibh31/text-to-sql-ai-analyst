@@ -1,5 +1,4 @@
 # Step 1: Extract Schema
-# Step 1: Extract Schema
 import sqlite3
 import json
 
@@ -59,12 +58,32 @@ SQL Query:"""
     return cleaned
 
 # Step 3: Run SQL on Database (read-only)
-def run_sql(db_path, query):
-    # Guardrail: only allow SELECT queries
-    if not query.strip().lower().startswith("select"):
-        raise ValueError("Only SELECT queries are allowed.")
+BLOCKED_WORDS = ["insert", "update", "delete", "drop", "alter", "create",
+                 "truncate", "attach", "detach", "pragma", "vacuum", "reindex"]
 
-    conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)  # opens the DB in read-only mode
+
+def check_query(query):
+    """Guardrail: allow only a single read-only query (SELECT, or WITH ... SELECT)."""
+    # Remove comments and a trailing semicolon before checking
+    sql = re.sub(r"--.*?$", " ", query, flags=re.MULTILINE)
+    sql = re.sub(r"/\*.*?\*/", " ", sql, flags=re.DOTALL).strip().rstrip(";").strip()
+    # Ignore text inside quotes, so a value like 'Drop Shipping' doesn't trigger a block
+    no_strings = re.sub(r"'[^']*'", "''", sql)
+    words = re.findall(r"[a-z_]+", no_strings.lower())
+
+    if not words or words[0] not in ("select", "with"):
+        raise ValueError("Only SELECT queries are allowed.")
+    if ";" in no_strings:
+        raise ValueError("Only one query at a time is allowed.")
+    blocked = [w for w in BLOCKED_WORDS if w in words]
+    if blocked:
+        raise ValueError(f"Blocked keyword in query: {blocked[0].upper()}")
+    return sql
+
+
+def run_sql(db_path, query):
+    query = check_query(query)
+    conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)  # second safety net: the DB is opened read-only
     cursor = conn.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
