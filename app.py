@@ -48,13 +48,14 @@ for i, example in enumerate(EXAMPLES):
         st.session_state.question = example
         st.session_state.auto_run = True
 
-question = st.text_input(
-    "Or ask your own question",
-    key="question",
-    placeholder="e.g. Which country has the most customers?",
-)
-
-run_clicked = st.button("Run", type="primary")
+# A form runs the question when you press Enter, as well as when you click Run
+with st.form("ask_form", border=False):
+    question = st.text_input(
+        "Or ask your own question",
+        key="question",
+        placeholder="e.g. Which country has the most customers?",
+    )
+    run_clicked = st.form_submit_button("Run", type="primary")
 
 if (run_clicked or st.session_state.pop("auto_run", False)) and question:
     schema = extract_schema(db_path)
